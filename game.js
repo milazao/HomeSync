@@ -120,21 +120,246 @@ function show(id) {
   $$('.screen').forEach(s => s.classList.toggle('hidden', s.id !== id));
   setHov(null); if (locked()) moveCur();
 }
-let toastT;
+const storyText = 'A tecnologia sempre prometeu tornar nossas vidas mais simples. Casas capazes de antecipar nossas necessidades, ambientes que se adaptam aos nossos hábitos e sistemas que aprendem conosco.\n\nAgora, essa promessa está prestes a se tornar realidade.';
+let startTimer, storyTimer, systemTimer, currentStage = '', startingGame = false, storyIndex = 0, storyChars = [], introTyping = false;
+let playerNickname = '';
+let systemLines = [], systemLineIndex = 0, systemChars = [], systemCharIndex = 0, systemTyping = false, systemChoices = [];
+
+function showStage(id) {
+  if (id !== 'intro') { clearTimeout(storyTimer); introTyping = false; }
+  if (id !== 'next-scene') { clearTimeout(systemTimer); systemTyping = false; }
+  currentStage = id;
+  show(id);
+  if (id !== 'nickname') $(`#${id}`).focus();
+}
+
+function beginIntro() {
+  const text = $('#intro-text');
+  text.textContent = '';
+  storyChars = Array.from(storyText);
+  storyIndex = 0;
+  showStage('intro');
+  if (!S.anim) { text.textContent = storyText; return; }
+  introTyping = true;
+  const typeNext = () => {
+    if (currentStage !== 'intro') return;
+    if (storyIndex >= storyChars.length) { introTyping = false; return; }
+    text.textContent += storyChars[storyIndex++];
+    storyTimer = setTimeout(typeNext, 28);
+  };
+  typeNext();
+}
+
+function displaySystemChoices() {
+  const choices = $('#system-choices');
+  choices.replaceChildren();
+  systemChoices.forEach(({ label, action }) => {
+    const button = document.createElement('button');
+    button.className = 'btn';
+    button.type = 'button';
+    button.textContent = label;
+    if (action) button.dataset.act = action;
+    else {
+      button.disabled = true;
+      button.title = 'Esta escolha ainda não tem uma continuação definida.';
+    }
+    choices.appendChild(button);
+  });
+  $('#system-hint').classList.add('hidden');
+  choices.classList.remove('hidden');
+}
+
+function finishSystemLine() {
+  clearTimeout(systemTimer);
+  systemTyping = false;
+  $('#system-text').textContent = systemLines[systemLineIndex];
+  if (systemLineIndex === systemLines.length - 1) displaySystemChoices();
+}
+
+function typeSystemLine() {
+  const text = $('#system-text');
+  text.textContent = '';
+  systemChars = Array.from(systemLines[systemLineIndex]);
+  systemCharIndex = 0;
+  if (!S.anim) { finishSystemLine(); return; }
+  systemTyping = true;
+  const typeNext = () => {
+    if (currentStage !== 'next-scene') return;
+    if (systemCharIndex >= systemChars.length) { finishSystemLine(); return; }
+    text.textContent += systemChars[systemCharIndex++];
+    systemTimer = setTimeout(typeNext, 28);
+  };
+  typeNext();
+}
+
+function beginSystemDialogue(lines, choices) {
+  systemLines = lines;
+  systemLineIndex = 0;
+  systemChoices = choices;
+  $('#system-choices').classList.add('hidden');
+  $('#system-hint').classList.remove('hidden');
+  showStage('next-scene');
+  typeSystemLine();
+}
+
+function beginHouseIntro() {
+  beginSystemDialogue([
+    `Bem vindo, ${playerNickname}! Sua participação é fundamental para o desenvolvimento da próxima geração de moradias inteligentes! Selecionado para participar de um programa experimental, você terá a oportunidade de viver em uma casa projetada para aprender, evoluir e se adaptar a você. Durante sua estadia, cada escolha, cada hábito e cada interação ajudarão a moldar essa experiência. Eu a moldarei!`,
+    'Clique em um objeto para interagir com ele, e espaço para avançar diálogos. Você terá que responder a perguntas durante o jogo. Tome cuidado ao responder!',
+    '...'
+  ], [
+    { label: 'Ligar sistema de adaptação', action: 'house-adapt' },
+    { label: 'Explorar outros cômodos', action: 'house-explore' },
+    { label: 'Desligar a IA' }
+  ]);
+}
+
+function showGameOver(message = 'tarde demais', black = false) {
+  $('#ending-message').textContent = message;
+  $('#ending').classList.toggle('black-ending', black);
+  showStage('ending');
+}
+
+function continueHouseJourney(message) {
+  beginSystemDialogue([message], [
+    { label: 'Voltar ao corredor', action: 'house-explore' },
+    { label: 'Pedir uma recomendação ao sistema', action: 'house-recommend' },
+    { label: 'Ignorar as instruções', action: 'house-game-over' }
+  ]);
+}
+
+function beginAdaptationChoices() {
+  beginSystemDialogue([
+    'Ótima escolha! Construiremos a melhor convivência possível! Escolha uma das três alternativas:'
+  ], [
+    { label: 'Escanear', action: 'house-scan' },
+    { label: 'Investigar', action: 'house-investigate' },
+    { label: 'Cancelar', action: 'house-game-over' }
+  ]);
+}
+
+function beginRoomChoices(room) {
+  if (room === 'bedroom') {
+    beginSystemDialogue([
+      'O quarto parece organizado demais. A cama está perfeitamente arrumada, e o armário está entreaberto.'
+    ], [
+      { label: 'Examinar a cama', action: 'bedroom-bed' },
+      { label: 'Olhar dentro do armário', action: 'bedroom-closet' },
+      { label: 'Abrir a janela', action: 'house-game-over' }
+    ]);
+    return;
+  }
+  beginSystemDialogue([
+    'O banheiro está silencioso. O espelho parece embaçado, embora ninguém tenha tomado banho.'
+  ], [
+    { label: 'Olhar o espelho', action: 'bathroom-mirror' },
+    { label: 'Abrir o armário', action: 'bathroom-cabinet' },
+    { label: 'Ligar o chuveiro', action: 'house-game-over' }
+  ]);
+}
+
+function beginRoomExploration() {
+  beginSystemDialogue([
+    'Você encontra um quarto com uma cama, um banheiro, e outro quarto fechado.'
+  ], [
+    { label: 'Entrar no quarto', action: 'house-bedroom' },
+    { label: 'Entrar no banheiro', action: 'house-bathroom' },
+    { label: 'Abrir a porta do quarto trancado', action: 'house-locked-room' }
+  ]);
+}
+
+const nicknameInput = $('#nickname-input');
+const nicknameForm = $('#nickname-form');
+nicknameInput.addEventListener('input', () => {
+  const cleaned = Array.from(nicknameInput.value.replace(/[^\p{L}]/gu, '')).slice(0, 8).join('');
+  if (nicknameInput.value !== cleaned) nicknameInput.value = cleaned;
+  $('#nickname-error').textContent = '';
+});
+function submitNickname() {
+  if (!nicknameInput.value) {
+    $('#nickname-error').textContent = 'Digite um nickname com pelo menos uma letra.';
+    nicknameInput.focus();
+    return;
+  }
+  playerNickname = nicknameInput.value;
+  beginIntro();
+}
+nicknameForm.addEventListener('submit', e => {
+  e.preventDefault();
+  submitNickname();
+});
+
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   const a = b.dataset.act;
-  if (a === 'start') { // ainda não configurado
-    $('#toast').classList.remove('hidden'); clearTimeout(toastT);
-    toastT = setTimeout(() => $('#toast').classList.add('hidden'), 1500);
+  if (a === 'start' && !startingGame) {
+    startingGame = true;
+    document.body.classList.add('game-mode');
+    $('#menu').classList.add('leaving');
+    setHov(null);
+    startTimer = setTimeout(() => {
+      if (!startingGame) return;
+      startingGame = false;
+      showStage('nickname');
+      nicknameInput.focus();
+    }, S.anim ? 500 : 0);
   }
   else if (a === 'opt') show('options');
   else if (a === 'cred') show('credits');
   else if (a === 'back') show('menu');
   else if (a === 'tog') { S[b.dataset.k] = !S[b.dataset.k]; applyUI(); }
   else if (a === 'sens') { S.sens = +b.dataset.i; applyUI(); }
+  else if (a === 'house-adapt') beginAdaptationChoices();
+  else if (a === 'house-explore') beginRoomExploration();
+  else if (a === 'house-locked-room') showGameOver('A Casa deixou você entrar. Mas nunca mais poderá sair desse quarto.', true);
+  else if (a === 'house-bedroom') beginRoomChoices('bedroom');
+  else if (a === 'house-bathroom') beginRoomChoices('bathroom');
+  else if (a === 'house-scan') continueHouseJourney('Uma luz azul percorre o ambiente. O sistema identifica seus hábitos e aguarda sua próxima decisão.');
+  else if (a === 'house-investigate') continueHouseJourney('Você acessa os registros da casa. Entre os dados, há observações sobre você que não se lembra de ter compartilhado.');
+  else if (a === 'bedroom-bed') continueHouseJourney('Ao tocar na cama, sensores discretos se acendem. A casa registra sua presença e abre novas possibilidades.');
+  else if (a === 'bedroom-closet') continueHouseJourney('Dentro do armário, você encontra roupas escolhidas no seu tamanho. A casa parece conhecer você bem demais.');
+  else if (a === 'bathroom-mirror') continueHouseJourney('Seu reflexo demora um instante para acompanhar seus movimentos. O sistema diz que está tudo funcionando normalmente.');
+  else if (a === 'bathroom-cabinet') continueHouseJourney('O armário contém itens organizados para suas necessidades. Um visor acende com uma recomendação da casa.');
+  else if (a === 'house-recommend') beginAdaptationChoices();
+  else if (a === 'house-game-over') showGameOver();
+  else if (a === 'nickname-submit') {
+    e.preventDefault();
+    submitNickname();
+  }
+  else if (a === 'enter-house') beginHouseIntro();
+  else if (a === 'refuse-house') showGameOver();
 });
-addEventListener('keydown', e => { if (e.key === 'Escape') show('menu'); });
+addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (startingGame || currentStage) {
+      clearTimeout(startTimer); clearTimeout(storyTimer); clearTimeout(systemTimer);
+      startingGame = false; currentStage = ''; introTyping = false; systemTyping = false;
+      document.body.classList.remove('game-mode');
+      $('#menu').classList.remove('leaving');
+    }
+    show('menu');
+    return;
+  }
+  if (e.code !== 'Space' || e.repeat) return;
+  if (currentStage === 'intro') {
+    e.preventDefault();
+    if (introTyping) {
+      clearTimeout(storyTimer);
+      $('#intro-text').textContent = storyText;
+      introTyping = false;
+    } else showStage('house-scene');
+  } else if (currentStage === 'house-scene') {
+    e.preventDefault();
+    showStage('question');
+  } else if (currentStage === 'next-scene') {
+    e.preventDefault();
+    if (systemTyping) finishSystemLine();
+    else if (systemLineIndex < systemLines.length - 1) {
+      systemLineIndex++;
+      typeSystemLine();
+    }
+  }
+});
 
 /* ================= EFEITOS SOBRE A IMAGEM (320x180) ================= */
 const fx = $('#fx'), fc = fx.getContext('2d');

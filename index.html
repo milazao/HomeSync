@@ -52,12 +52,67 @@
 
 <section id="credits" class="screen panel hidden">
   <h2>Créditos</h2>
-  <div class="cred"><small>Criado por</small><strong>Milps</strong><strong>Julips</strong></div>
-  <div class="cred"><small>Desenvolvido com</small><strong>Claude</strong><small>IA da Anthropic</small></div>
+  <div class="cred"><small>Criado por</small><strong>Milena N30</strong><strong>Juliana N23</strong></div>
+  <div class="cred"><small>Turma</small><strong>3J</strong></div>
+  <div class="cred"><small>Professor</small><strong>Fábio Cesar</strong></div>
   <button class="btn" data-act="back">Retornar</button>
 </section>
 
-<div id="toast" class="hidden">Em breve!</div>
+<section id="nickname" class="screen game-screen hidden" aria-labelledby="nickname-title">
+  <form id="nickname-form" class="game-card">
+    <h2 id="nickname-title">Identificação</h2>
+    <label for="nickname-input">Digite seu nickname</label>
+    <input id="nickname-input" name="nickname" type="text" maxlength="8" autocomplete="nickname"
+      aria-describedby="nickname-hint nickname-error" autofocus>
+    <p id="nickname-hint">Até 8 letras, sem caracteres especiais.</p>
+    <p id="nickname-error" class="game-error" aria-live="polite"></p>
+    <button class="btn" type="submit" data-act="nickname-submit">Concluir</button>
+  </form>
+</section>
+
+<section id="intro" class="screen game-screen hidden" tabindex="-1" aria-label="Introdução">
+  <div class="dialogue" aria-live="polite">
+    <p id="intro-text"></p>
+    <p class="continue-hint">Pressione espaço para continuar</p>
+  </div>
+</section>
+
+<section id="house-scene" class="screen game-screen hidden" tabindex="-1" aria-label="Uma casa escura acende suas luzes">
+  <div class="room light-on" aria-hidden="true">
+    <div class="room-window"></div>
+    <div class="room-door"></div>
+    <div class="room-lamp"><span></span></div>
+    <div class="room-floor"></div>
+  </div>
+  <p class="continue-hint house-hint">Pressione espaço para continuar</p>
+</section>
+
+<section id="question" class="screen game-screen hidden" tabindex="-1" aria-labelledby="question-text">
+  <div class="question-card">
+    <p id="question-text">...</p>
+    <div class="question-choices">
+      <button class="btn" data-act="enter-house">Entrar na casa</button>
+      <button class="btn" data-act="refuse-house">Não entrar</button>
+    </div>
+  </div>
+</section>
+
+<section id="ending" class="screen game-screen hidden" tabindex="-1" aria-label="Fim de jogo">
+  <p id="ending-message" class="ending-message">tarde demais</p>
+</section>
+
+<section id="next-scene" class="screen game-screen hidden" tabindex="-1" aria-label="Continuação">
+  <div class="system-dialogue">
+    <header class="system-header">
+      <span class="system-status" aria-hidden="true"></span>
+      <h2>Sistema da casa</h2>
+    </header>
+    <p id="system-text" aria-live="polite"></p>
+    <p id="system-hint" class="continue-hint">Pressione espaço para avançar</p>
+    <div id="system-choices" class="system-choices hidden" aria-label="Alternativas"></div>
+  </div>
+</section>
+
 <div id="cursor"></div>
 <script src="game.js"></script>
 </body>

@@ -7,11 +7,13 @@
 body.virt,body.virt *{cursor:none}
 html,body{margin:0;height:100%;overflow:hidden;background:#2a7fd0;font-family:var(--lcd);color:var(--ink)}
 body.noanim *,body.noanim *::before,body.noanim *::after{animation:none!important;transition:none!important}
+body.game-mode{background:#000}
 
 /* fundo: sua imagem + brilho suave embaixo para dar leitura aos botões */
-#bg{position:fixed;inset:0;z-index:0;background:#2a7fd0 url(assets/bg.png) center bottom/cover no-repeat;image-rendering:pixelated}
+#bg{position:fixed;inset:0;z-index:0;background:#2a7fd0 url(assets/bg.png) center bottom/cover no-repeat;image-rendering:pixelated;transition:opacity .75s ease}
 #bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(10,47,107,.4))}
-#fx{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;image-rendering:pixelated;z-index:0;pointer-events:none}
+#fx{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;image-rendering:pixelated;z-index:0;pointer-events:none;transition:opacity .75s ease}
+body.game-mode #bg,body.game-mode #fx{opacity:0}
 .screen{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center}
 .hidden{display:none!important}
 
@@ -28,6 +30,8 @@ body.noanim *,body.noanim *::before,body.noanim *::after{animation:none!importan
   box-shadow:inset 0 0 0 2px var(--cy),4px 4px 0 rgba(10,47,107,.5)}
 .tag b{animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
+#menu.leaving{animation:menuExit .45s ease-in forwards}
+@keyframes menuExit{to{opacity:0;transform:translateY(-12px) scale(.97)}}
 
 /* ---------- botões de vidro neon ---------- */
 .menu-btns{display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
@@ -69,6 +73,77 @@ body.noanim *,body.noanim *::before,body.noanim *::after{animation:none!importan
 .cred{text-align:center;display:flex;flex-direction:column;gap:6px}
 .cred small{font-size:24px;opacity:.85}
 .cred strong{font:400 clamp(16px,3vw,24px) var(--px);color:var(--ink);text-shadow:3px 3px 0 #9bffbf}
+
+/* ---------- início do jogo ---------- */
+.game-screen{z-index:2;justify-content:center;background:#000;color:#fff}
+.game-card,.question-card{width:min(620px,90vw);padding:clamp(24px,5vw,44px);
+  display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;
+  background:rgba(5,14,24,.92);box-shadow:inset 0 0 0 2px var(--cy),0 0 24px rgba(111,240,255,.18)}
+.game-card h2{margin:0;font:400 clamp(18px,3vw,25px) var(--px);color:var(--cy)}
+.game-card label{font-size:32px}
+.game-card input{width:min(360px,100%);padding:10px 14px;border:3px solid var(--cy);outline:none;
+  background:#02070d;color:#fff;text-align:center;font:400 36px var(--lcd);text-transform:none}
+.game-card input:focus{box-shadow:0 0 0 3px rgba(111,240,255,.3)}
+#nickname-hint,.game-error{min-height:1em;margin:0;font-size:23px}
+#nickname-hint{color:#b8d5df}
+.game-error{color:#ff8585}
+.dialogue{width:min(900px,88vw);padding:clamp(20px,5vw,48px);text-align:left;
+  background:linear-gradient(180deg,rgba(8,15,24,.95),rgba(2,5,9,.96));box-shadow:inset 0 0 0 2px #173649}
+#intro-text{min-height:4.5em;margin:0;color:#d9faff;font:400 clamp(25px,4vw,38px)/1.35 var(--lcd);white-space:pre-wrap}
+.continue-hint{margin:24px 0 0;color:#7eb9c4;text-align:center;font:400 22px var(--lcd);animation:blink 1.2s steps(1) infinite}
+
+/* Cena ilustrada em CSS até a arte da casa ser adicionada. */
+#house-scene{overflow:hidden}
+.room{position:absolute;inset:0;overflow:hidden;
+  background:linear-gradient(180deg,#111723 0 72%,#17151a 72% 100%)}
+.room::before{content:"";position:absolute;inset:0;opacity:0;
+  background:radial-gradient(ellipse at 53% 37%,rgba(255,218,139,.65),rgba(255,185,92,.18) 30%,transparent 65%);
+  animation:lightsOn 1.8s ease-out .25s forwards}
+@keyframes lightsOn{to{opacity:1}}
+.room-window{position:absolute;left:15%;top:18%;width:21%;height:35%;border:8px solid #293345;
+  background:linear-gradient(145deg,#172e44,#314659);box-shadow:inset 0 0 0 3px #71818b,0 0 0 2px #090e16}
+.room-window::before,.room-window::after{content:"";position:absolute;background:#293345}
+.room-window::before{width:7px;top:0;bottom:0;left:50%}
+.room-window::after{height:7px;left:0;right:0;top:50%}
+.room-door{position:absolute;right:16%;bottom:27%;width:17%;height:47%;border:7px solid #252b35;
+  background:linear-gradient(110deg,#161a20,#30303a);box-shadow:inset 0 0 0 2px #090e16}
+.room-door::after{content:"";position:absolute;right:12%;top:52%;width:8px;height:8px;background:#d8b576}
+.room-lamp{position:absolute;z-index:1;left:50%;top:7%;height:35%;width:4px;background:#252b35;transform:translateX(-50%)}
+.room-lamp::before{content:"";position:absolute;left:50%;top:0;width:70px;height:38px;transform:translateX(-50%);
+  background:#242b35;clip-path:polygon(25% 0,75% 0,100% 100%,0 100%)}
+.room-lamp span{position:absolute;left:50%;top:34px;width:18px;height:12px;transform:translateX(-50%);
+  background:#ffe5a0;box-shadow:0 0 8px 4px #ffe5a0,0 0 40px 18px rgba(255,202,112,.7)}
+.room-floor{position:absolute;left:0;right:0;bottom:0;height:28%;
+  background:linear-gradient(165deg,transparent 0 49%,rgba(0,0,0,.25) 50%),linear-gradient(180deg,#28252b,#100f14)}
+.house-hint{position:absolute;z-index:2;bottom:5vh;left:0;right:0;text-shadow:0 2px 6px #000}
+.question-card{gap:28px}
+.question-card>p{margin:0;color:#e8fcff;font:400 clamp(38px,7vw,58px) var(--lcd)}
+.question-choices{display:flex;flex-wrap:wrap;justify-content:center;gap:20px}
+.ending-message{color:#fff;font:400 clamp(38px,8vw,72px) var(--px);text-shadow:4px 4px 0 #7a1010}
+#ending{background:#b20e16}
+#ending.black-ending{background:#000}
+#ending.black-ending .ending-message{max-width:90vw;color:#ff4545;font:400 clamp(24px,5vw,46px)/1.35 var(--lcd);
+  text-align:center;text-shadow:0 0 8px rgba(255,35,35,.65),3px 3px 0 #510b0b}
+#next-scene{background:#000}
+.system-dialogue{width:min(920px,92vw);max-height:88vh;overflow-y:auto;overscroll-behavior:contain;
+  padding:clamp(20px,4vw,36px);display:flex;flex-direction:column;gap:18px;
+  color:#123e52;background:linear-gradient(140deg,rgba(255,255,255,.97),rgba(213,255,248,.94) 46%,rgba(197,235,255,.96));
+  border:2px solid #fff;box-shadow:inset 0 0 0 2px rgba(111,240,255,.85),inset 0 -12px 30px rgba(43,198,177,.13),
+  0 0 0 2px rgba(80,224,225,.55),0 18px 55px rgba(0,0,0,.5);backdrop-filter:blur(14px);border-radius:24px!important}
+.system-dialogue *{border-radius:12px!important}
+.system-header{display:flex;align-items:center;gap:14px;padding:12px 16px;
+  background:linear-gradient(100deg,rgba(255,255,255,.92),rgba(203,255,232,.88),rgba(191,234,255,.9));
+  box-shadow:inset 0 0 0 1px rgba(63,177,190,.45),0 3px 12px rgba(35,128,149,.13)}
+.system-header h2{margin:0;color:#116a70;font:400 clamp(16px,2.4vw,22px) var(--px);text-shadow:1px 2px #fff}
+.system-status{width:14px;height:14px;flex:none;border:2px solid #fff;background:#69efa9;
+  box-shadow:0 0 0 2px #46b9ac,0 0 14px #55e8b3;animation:systemPulse 1.8s ease-in-out infinite}
+@keyframes systemPulse{50%{box-shadow:0 0 0 2px #46b9ac,0 0 22px 5px rgba(85,232,179,.75)}}
+#system-text{min-height:3.2em;margin:4px 8px 0;color:#123e52;font:400 clamp(26px,4vw,38px)/1.2 var(--lcd);white-space:pre-wrap}
+#system-hint{margin:0;color:#39858d}
+.system-choices{display:flex;flex-wrap:wrap;justify-content:center;gap:18px;padding-top:4px}
+.system-choices .btn{border-radius:12px!important}
+.system-choices .btn:disabled::after{display:none}
+.system-choices .btn:disabled{opacity:.55;filter:saturate(.55);box-shadow:inset 0 0 0 3px rgba(255,255,255,.65),0 0 0 3px rgba(111,240,255,.3),0 5px 0 var(--ink)}
 
 #toast{position:fixed;z-index:5;left:50%;bottom:24vh;transform:translateX(-50%);font:400 14px var(--px);color:#fff;
   background:var(--ink);padding:14px 20px;box-shadow:inset 0 0 0 3px var(--cy)}
