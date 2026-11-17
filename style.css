@@ -1,0 +1,74 @@
+:root{
+  --ink:#0b3d7a; --sky:#3aa6e8; --ice:#e9fbff; --mint:#7dffa8; --leaf:#2f9e5a;
+  --px:'Press Start 2P',ui-monospace,Menlo,Consolas,monospace;
+  --lcd:'VT323',ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;border-radius:0!important;cursor:none}
+html,body{margin:0;height:100%;overflow:hidden;background:#78cffd;font-family:var(--lcd);color:var(--ink)}
+body.touch,body.touch *{cursor:auto}
+body.noanim *,body.noanim *::before,body.noanim *::after{animation:none!important;transition:none!important}
+
+#bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;image-rendering:pixelated;z-index:0}
+.screen{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center}
+.hidden{display:none!important}
+
+/* ---------- título ---------- */
+#menu{justify-content:space-between;padding:7vh 16px 9vh}
+.hero{text-align:center}
+.title{margin:0;font:400 clamp(30px,8vw,84px)/1.2 var(--px);color:#fff;letter-spacing:.04em;
+  text-shadow:4px 4px 0 #1b78d1,8px 8px 0 var(--ink)}
+.title span{display:inline-block;animation:wave 1.6s steps(5) infinite,tint 3.2s steps(4) infinite;animation-delay:calc(var(--i)*.14s)}
+.title .g{color:var(--mint);text-shadow:4px 4px 0 var(--leaf),8px 8px 0 #0b5a3a}
+@keyframes wave{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes tint{0%,100%{filter:none}50%{filter:brightness(1.18)}}
+.tag{margin:26px 0 0;font-size:clamp(20px,3vw,30px);color:var(--ink);background:rgba(255,255,255,.7);display:inline-block;padding:2px 12px;box-shadow:inset 0 0 0 2px #fff,4px 4px 0 rgba(11,61,122,.45)}
+.tag b{animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ---------- botões ---------- */
+.menu-btns{display:flex;gap:22px;flex-wrap:wrap;justify-content:center}
+.btn{font:400 clamp(11px,1.6vw,16px)/1 var(--px);color:#fff;text-shadow:2px 2px 0 var(--ink);
+  min-width:190px;padding:18px 22px;border:4px solid var(--ink);
+  background:linear-gradient(180deg,#bff2ff 0 8%,#6fd0ff 8% 50%,#2c8fe0 50% 100%);
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.75),0 6px 0 var(--ink);
+  transition:transform .08s steps(2)}
+.btn.hov{background:linear-gradient(180deg,#d6ffe4 0 8%,#7dffa8 8% 50%,#2fb866 50% 100%);transform:translateY(-3px);box-shadow:inset 0 0 0 3px #fff,0 9px 0 #0b5a3a;border-color:#0b5a3a;text-shadow:2px 2px 0 #0b5a3a}
+.btn.press{transform:translateY(5px);box-shadow:inset 0 0 0 3px #fff,0 1px 0 var(--ink)}
+
+/* ---------- painéis de vidro ---------- */
+.panel{justify-content:center;gap:22px;margin:auto;inset:auto;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(680px,92vw);padding:30px 28px 28px;
+  background:linear-gradient(180deg,rgba(255,255,255,.88) 0 38%,rgba(196,235,255,.8) 38% 100%);
+  backdrop-filter:blur(4px);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 8px var(--sky),10px 10px 0 rgba(11,61,122,.5)}
+.panel h2{margin:0 0 6px;font:400 clamp(18px,3vw,26px) var(--px);color:var(--ink);text-shadow:3px 3px 0 #bfe9ff}
+.row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:clamp(22px,3vw,28px);
+  padding:10px 14px;background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 2px #fff,inset 0 -4px 0 rgba(58,166,232,.35)}
+.row label{flex:1 1 200px}
+.x{position:absolute;top:14px;right:14px;min-width:0;padding:10px 12px;font-size:14px}
+.tog{min-width:210px;display:flex;align-items:center;gap:12px;padding:12px 14px;font-size:11px}
+.led{width:14px;height:14px;background:#ff8a8a;border:2px solid var(--ink);display:block;flex:none}
+.tog.on .led{background:var(--mint);box-shadow:0 0 0 2px #fff}
+.segs{display:flex;gap:4px}
+.seg{width:16px;height:28px;border:3px solid var(--ink);background:#d9f2ff}
+.seg.fill{background:linear-gradient(180deg,#d6ffe4 0 40%,#43c872 40% 100%)}
+.seg.hov{border-color:#0b5a3a;background:#aaffc7}
+.val{font:400 12px var(--px);min-width:64px;text-align:right}
+.cred{text-align:center;display:flex;flex-direction:column;gap:6px}
+.cred small{font-size:24px;opacity:.85}
+.cred strong{font:400 clamp(16px,3vw,24px) var(--px);color:var(--ink);text-shadow:3px 3px 0 #9bffbf}
+
+#toast{position:fixed;z-index:5;left:50%;bottom:24vh;transform:translateX(-50%);font:400 14px var(--px);color:#fff;
+  background:var(--ink);padding:14px 20px;box-shadow:inset 0 0 0 3px var(--mint)}
+
+/* ---------- cursor virtual (seta pixelada) ---------- */
+#cursor{position:fixed;left:0;top:0;z-index:99;pointer-events:none;width:4px;height:4px;background:transparent;
+  box-shadow:0 0 0 0 #000;will-change:transform}
+#cursor::before{content:"";position:absolute;left:0;top:0;width:4px;height:4px;
+  box-shadow:
+   0 0 0 #fff, 0 4px 0 #fff, 0 8px 0 #fff, 0 12px 0 #fff, 0 16px 0 #fff, 0 20px 0 #fff, 0 24px 0 #fff,
+   4px 4px 0 #fff, 4px 8px 0 #fff, 4px 12px 0 #fff, 4px 16px 0 #fff, 4px 20px 0 #fff,
+   8px 8px 0 #fff, 8px 12px 0 #fff, 8px 16px 0 #fff, 12px 12px 0 #fff, 12px 16px 0 #fff, 16px 16px 0 #fff,
+   -4px -4px 0 var(--ink), -4px 0 0 var(--ink), -4px 4px 0 var(--ink), -4px 8px 0 var(--ink), -4px 12px 0 var(--ink), -4px 16px 0 var(--ink), -4px 20px 0 var(--ink), -4px 24px 0 var(--ink), -4px 28px 0 var(--ink),
+   0 -4px 0 var(--ink), 4px 0 0 var(--ink), 8px 4px 0 var(--ink), 12px 8px 0 var(--ink), 16px 12px 0 var(--ink), 20px 16px 0 var(--ink),
+   20px 20px 0 var(--ink), 16px 20px 0 var(--ink), 12px 20px 0 var(--ink), 8px 24px 0 var(--ink), 4px 28px 0 var(--ink), 0 32px 0 var(--ink);}
+body.touch #cursor{display:none}

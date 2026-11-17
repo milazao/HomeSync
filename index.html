@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HomeSync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<main id="menu" class="screen">
+  <header class="hero">
+    <h1 class="title" aria-label="HomeSync">
+      <span>H</span><span>o</span><span>m</span><span>e</span><span class="g">S</span><span class="g">y</span><span class="g">n</span><span class="g">c</span>
+    </h1>
+    <p class="tag">Casa inteligente: clique, responda, conecte<b>_</b></p>
+  </header>
+  <nav class="menu-btns">
+    <button class="btn" data-act="start">Iniciar</button>
+    <button class="btn" data-act="opt">Opções</button>
+    <button class="btn" data-act="cred">Créditos</button>
+  </nav>
+</main>
+
+<section id="options" class="screen panel hidden">
+  <button class="btn x" data-act="back" aria-label="Voltar ao menu">X</button>
+  <h2>Opções</h2>
+  <div class="row">
+    <label>Sensibilidade do mouse</label>
+    <div class="segs" id="segs"></div>
+    <span class="val" id="sensVal">1.0x</span>
+  </div>
+  <div class="row">
+    <label>Animações</label>
+    <button class="btn tog" data-act="tog" data-k="anim"><i class="led"></i><span></span></button>
+  </div>
+  <div class="row">
+    <label>Música</label>
+    <button class="btn tog" data-act="tog" data-k="music"><i class="led"></i><span></span></button>
+  </div>
+  <div class="row">
+    <label>Efeitos sonoros</label>
+    <button class="btn tog" data-act="tog" data-k="sfx"><i class="led"></i><span></span></button>
+  </div>
+</section>
+
+<section id="credits" class="screen panel hidden">
+  <h2>Créditos</h2>
+  <div class="cred"><small>Criado por</small><strong>Milps</strong><strong>Julips</strong></div>
+  <div class="cred"><small>Desenvolvido com</small><strong>Claude</strong><small>IA da Anthropic</small></div>
+  <button class="btn" data-act="back">Retornar</button>
+</section>
+
+<div id="toast" class="hidden">Em breve!</div>
+<div id="cursor"></div>
+<script src="game.js"></script>
+</body>
+</html>
