@@ -214,17 +214,25 @@ function beginHouseIntro() {
   ]);
 }
 
-function showGameOver(message = 'tarde demais', black = false) {
+function showGameOver(message, black = false) {
   $('#ending-message').textContent = message;
   $('#ending').classList.toggle('black-ending', black);
   showStage('ending');
+}
+
+function returnToMenu() {
+  clearTimeout(startTimer); clearTimeout(storyTimer); clearTimeout(systemTimer);
+  startingGame = false; currentStage = ''; introTyping = false; systemTyping = false;
+  document.body.classList.remove('game-mode');
+  $('#menu').classList.remove('leaving');
+  show('menu');
 }
 
 function continueHouseJourney(message) {
   beginSystemDialogue([message], [
     { label: 'Voltar ao corredor', action: 'house-explore' },
     { label: 'Pedir uma recomendação ao sistema', action: 'house-recommend' },
-    { label: 'Ignorar as instruções', action: 'house-game-over' }
+    { label: 'Ignorar as instruções', action: 'house-ignore' }
   ]);
 }
 
@@ -234,7 +242,7 @@ function beginAdaptationChoices() {
   ], [
     { label: 'Escanear', action: 'house-scan' },
     { label: 'Investigar', action: 'house-investigate' },
-    { label: 'Cancelar', action: 'house-game-over' }
+    { label: 'Cancelar', action: 'house-cancel' }
   ]);
 }
 
@@ -245,7 +253,7 @@ function beginRoomChoices(room) {
     ], [
       { label: 'Examinar a cama', action: 'bedroom-bed' },
       { label: 'Olhar dentro do armário', action: 'bedroom-closet' },
-      { label: 'Abrir a janela', action: 'house-game-over' }
+      { label: 'Abrir a janela', action: 'bedroom-window' }
     ]);
     return;
   }
@@ -254,7 +262,7 @@ function beginRoomChoices(room) {
   ], [
     { label: 'Olhar o espelho', action: 'bathroom-mirror' },
     { label: 'Abrir o armário', action: 'bathroom-cabinet' },
-    { label: 'Ligar o chuveiro', action: 'house-game-over' }
+    { label: 'Ligar o chuveiro', action: 'bathroom-shower' }
   ]);
 }
 
@@ -321,7 +329,11 @@ document.addEventListener('click', e => {
   else if (a === 'bathroom-mirror') continueHouseJourney('Seu reflexo demora um instante para acompanhar seus movimentos. O sistema diz que está tudo funcionando normalmente.');
   else if (a === 'bathroom-cabinet') continueHouseJourney('O armário contém itens organizados para suas necessidades. Um visor acende com uma recomendação da casa.');
   else if (a === 'house-recommend') beginAdaptationChoices();
-  else if (a === 'house-game-over') showGameOver();
+  else if (a === 'house-cancel') showGameOver('O protocolo já começou. A casa não permite que você cancele a adaptação.');
+  else if (a === 'house-ignore') showGameOver('A casa detectou que você ignorou as instruções e bloqueou todas as saídas.');
+  else if (a === 'bedroom-window') showGameOver('A janela não abre. As travas inteligentes se ativaram e a casa bloqueou você no quarto.');
+  else if (a === 'bathroom-shower') showGameOver('O chuveiro se ligou sozinho. A porta se trancou: a casa assumiu o controle do ambiente.');
+  else if (a === 'ending-return') returnToMenu();
   else if (a === 'dialogue-advance') {
     if (currentStage === 'intro') {
       if (introTyping) {
@@ -343,19 +355,10 @@ document.addEventListener('click', e => {
     submitNickname();
   }
   else if (a === 'enter-house') beginHouseIntro();
-  else if (a === 'refuse-house') showGameOver();
+  else if (a === 'refuse-house') showGameOver('A porta se fechou antes que você pudesse voltar. A casa registrou sua recusa como tardia.');
 });
 addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    if (startingGame || currentStage) {
-      clearTimeout(startTimer); clearTimeout(storyTimer); clearTimeout(systemTimer);
-      startingGame = false; currentStage = ''; introTyping = false; systemTyping = false;
-      document.body.classList.remove('game-mode');
-      $('#menu').classList.remove('leaving');
-    }
-    show('menu');
-    return;
-  }
+  if (e.key === 'Escape') returnToMenu();
 });
 
 /* ================= EFEITOS SOBRE A IMAGEM (320x180) ================= */
