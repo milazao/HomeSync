@@ -119,11 +119,13 @@ body.game-mode #bg,body.game-mode #fx{opacity:0}
 .question-card{gap:28px}
 .question-card>p{margin:0;color:#e8fcff;font:400 clamp(38px,7vw,58px) var(--lcd)}
 .question-choices{display:flex;flex-wrap:wrap;justify-content:center;gap:20px}
-.ending-message{color:#fff;font:400 clamp(38px,8vw,72px) var(--px);text-shadow:4px 4px 0 #7a1010}
+.ending-message{color:#fff;font:400 clamp(28px,5vw,46px) var(--px);text-align:center;text-shadow:3px 3px 0 #7a1010}
 #ending{background:#b20e16}
+#ending .continue-hint{color:#ffe0e0}
 #ending.black-ending{background:#000}
-#ending.black-ending .ending-message{max-width:90vw;color:#ff4545;font:400 clamp(24px,5vw,46px)/1.35 var(--lcd);
+#ending.black-ending .ending-message{max-width:90vw;color:#ff4545;font:400 clamp(20px,3.8vw,34px)/1.35 var(--lcd);
   text-align:center;text-shadow:0 0 8px rgba(255,35,35,.65),3px 3px 0 #510b0b}
+#ending.black-ending .continue-hint{color:#ff8585}
 #next-scene{background:#000}
 .system-dialogue{width:min(920px,92vw);max-height:88vh;overflow-y:auto;overscroll-behavior:contain;
   padding:clamp(20px,4vw,36px);display:flex;flex-direction:column;gap:18px;

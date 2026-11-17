@@ -214,9 +214,10 @@ function beginHouseIntro() {
   ]);
 }
 
-function showGameOver(message, black = false) {
+function showGameOver(message) {
   $('#ending-message').textContent = message;
-  $('#ending').classList.toggle('black-ending', black);
+  const isTooLate = message.trim().toLocaleLowerCase('pt-BR') === 'tarde demais';
+  $('#ending').classList.toggle('black-ending', !isTooLate);
   showStage('ending');
 }
 
@@ -319,7 +320,7 @@ document.addEventListener('click', e => {
   else if (a === 'sens') { S.sens = +b.dataset.i; applyUI(); }
   else if (a === 'house-adapt') beginAdaptationChoices();
   else if (a === 'house-explore') beginRoomExploration();
-  else if (a === 'house-locked-room') showGameOver('A Casa deixou você entrar. Mas nunca mais poderá sair desse quarto.', true);
+  else if (a === 'house-locked-room') showGameOver('A Casa deixou você entrar. Mas nunca mais poderá sair desse quarto.');
   else if (a === 'house-bedroom') beginRoomChoices('bedroom');
   else if (a === 'house-bathroom') beginRoomChoices('bathroom');
   else if (a === 'house-scan') continueHouseJourney('Uma luz azul percorre o ambiente. O sistema identifica seus hábitos e aguarda sua próxima decisão.');
