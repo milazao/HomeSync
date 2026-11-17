@@ -205,7 +205,7 @@ function beginSystemDialogue(lines, choices) {
 function beginHouseIntro() {
   beginSystemDialogue([
     `Bem vindo, ${playerNickname}! Sua participação é fundamental para o desenvolvimento da próxima geração de moradias inteligentes! Selecionado para participar de um programa experimental, você terá a oportunidade de viver em uma casa projetada para aprender, evoluir e se adaptar a você. Durante sua estadia, cada escolha, cada hábito e cada interação ajudarão a moldar essa experiência. Eu a moldarei!`,
-    'Clique em um objeto para interagir com ele, e espaço para avançar diálogos. Você terá que responder a perguntas durante o jogo. Tome cuidado ao responder!',
+    'Clique em um objeto para interagir com ele, e clique para avançar diálogos. Você terá que responder a perguntas durante o jogo. Tome cuidado ao responder!',
     '...'
   ], [
     { label: 'Ligar sistema de adaptação', action: 'house-adapt' },
@@ -322,6 +322,22 @@ document.addEventListener('click', e => {
   else if (a === 'bathroom-cabinet') continueHouseJourney('O armário contém itens organizados para suas necessidades. Um visor acende com uma recomendação da casa.');
   else if (a === 'house-recommend') beginAdaptationChoices();
   else if (a === 'house-game-over') showGameOver();
+  else if (a === 'dialogue-advance') {
+    if (currentStage === 'intro') {
+      if (introTyping) {
+        clearTimeout(storyTimer);
+        $('#intro-text').textContent = storyText;
+        introTyping = false;
+      } else showStage('house-scene');
+    } else if (currentStage === 'next-scene') {
+      if (systemTyping) finishSystemLine();
+      else if (systemLineIndex < systemLines.length - 1) {
+        systemLineIndex++;
+        typeSystemLine();
+      }
+    }
+  }
+  else if (a === 'house-scene-advance' && currentStage === 'house-scene') showStage('question');
   else if (a === 'nickname-submit') {
     e.preventDefault();
     submitNickname();
@@ -339,25 +355,6 @@ addEventListener('keydown', e => {
     }
     show('menu');
     return;
-  }
-  if (e.code !== 'Space' || e.repeat) return;
-  if (currentStage === 'intro') {
-    e.preventDefault();
-    if (introTyping) {
-      clearTimeout(storyTimer);
-      $('#intro-text').textContent = storyText;
-      introTyping = false;
-    } else showStage('house-scene');
-  } else if (currentStage === 'house-scene') {
-    e.preventDefault();
-    showStage('question');
-  } else if (currentStage === 'next-scene') {
-    e.preventDefault();
-    if (systemTyping) finishSystemLine();
-    else if (systemLineIndex < systemLines.length - 1) {
-      systemLineIndex++;
-      typeSystemLine();
-    }
   }
 });
 

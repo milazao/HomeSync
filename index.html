@@ -71,20 +71,21 @@
 </section>
 
 <section id="intro" class="screen game-screen hidden" tabindex="-1" aria-label="Introdução">
-  <div class="dialogue" aria-live="polite">
+  <div class="dialogue" data-act="dialogue-advance" aria-live="polite">
     <p id="intro-text"></p>
-    <p class="continue-hint">Pressione espaço para continuar</p>
+    <p class="continue-hint">Clique para continuar</p>
   </div>
 </section>
 
-<section id="house-scene" class="screen game-screen hidden" tabindex="-1" aria-label="Uma casa escura acende suas luzes">
+<section id="house-scene" class="screen game-screen hidden" tabindex="-1"
+  aria-label="Uma casa escura acende suas luzes" data-act="house-scene-advance">
   <div class="room light-on" aria-hidden="true">
     <div class="room-window"></div>
     <div class="room-door"></div>
     <div class="room-lamp"><span></span></div>
     <div class="room-floor"></div>
   </div>
-  <p class="continue-hint house-hint">Pressione espaço para continuar</p>
+  <p class="continue-hint house-hint">Clique para continuar</p>
 </section>
 
 <section id="question" class="screen game-screen hidden" tabindex="-1" aria-labelledby="question-text">
@@ -102,13 +103,13 @@
 </section>
 
 <section id="next-scene" class="screen game-screen hidden" tabindex="-1" aria-label="Continuação">
-  <div class="system-dialogue">
+  <div class="system-dialogue" data-act="dialogue-advance">
     <header class="system-header">
       <span class="system-status" aria-hidden="true"></span>
       <h2>Sistema da casa</h2>
     </header>
     <p id="system-text" aria-live="polite"></p>
-    <p id="system-hint" class="continue-hint">Pressione espaço para avançar</p>
+    <p id="system-hint" class="continue-hint">Clique para avançar</p>
     <div id="system-choices" class="system-choices hidden" aria-label="Alternativas"></div>
   </div>
 </section>
